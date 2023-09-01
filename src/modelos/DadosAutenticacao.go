@@ -1,6 +1,6 @@
 package modelos
 
 type DadosAutenticacao struct {
-	ID    string `json:"id"`
-	Token string `json:"token"`
+	IDUsuario string `json:"id_usuario"`
+	Token     string `json:"token"`
 }

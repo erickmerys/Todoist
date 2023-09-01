@@ -5,11 +5,11 @@ import (
 	"net/http"
 )
 
-var rotaLogin = []Rota {
+var rotaLogin = []Rota{
 	{
-		URI: "/login",
-		Metodo: http.MethodPost,
-		Funcao: controllers.Login,
+		URI:                "/login",
+		Metodo:             http.MethodPost,
+		Funcao:             controllers.Login,
 		RequerAutenticacao: false,
 	},
 }

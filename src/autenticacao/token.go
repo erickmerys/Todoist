@@ -3,7 +3,9 @@ package autenticacao
 import (
 	"errors"
 	"fmt"
+	"modulo/src/banco"
 	"modulo/src/config"
+	"modulo/src/repository"
 	"net/http"
 	"strconv"
 	"strings"
@@ -65,7 +67,20 @@ func ExtrairUsuarioID(r *http.Request) (uint64, error) {
 		if erro != nil {
 			return 0, erro
 		}
+
+		db, erro := banco.Conectar()
+		if erro != nil {
+			errors.New("Erro ao tentar acessar o banco de dados!")
+		}
+		defer db.Close()
+
+		repositorio := repository.NovoRepositorioAutenticacao(db)
+		if erro = repositorio.BuscarToken(fmt.Sprintf("%0.f", permissoes["usuarioId"]), tokenString); erro != nil {
+			errors.New("Usuário não autorizado!")
+		}
+		
 		return usuarioID, nil
 	}
-	return 0, errors.New("Token Inválido")
+
+	return 0, erro
 }

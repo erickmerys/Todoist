@@ -162,15 +162,53 @@ func DeletarTarefa(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	repositorio := repository.NovoRepositorioDeTarefas(db)
-	_ , erro = repositorio.BuscarPorID(tarefaID, usuarioID)
+	tarefaSalvaNoBanco , erro := repositorio.BuscarPorID(tarefaID, usuarioID)
 	if erro != nil {
 		respostas.Erro(w, http.StatusInternalServerError, erro)
 	}
 
+	if tarefaSalvaNoBanco.TarefaUsuario != usuarioID {
+		respostas.Erro(w, http.StatusForbidden, errors.New("Não é possível deletar uma tarefa que não seja a sua!"))
+		return
+	}
+
+
 	if erro = repositorio.DeletarTarefa(tarefaID); erro != nil {
-		respostas.Erro(w, http.StatusForbidden, errors.New("Não é possível apagar uma tarefa que nã seja a sua!"))
+		respostas.Erro(w, http.StatusInternalServerError, erro)
 		return
 	}
 
 	respostas.JSON(w, http.StatusNoContent, nil)
+}
+
+// BuscarTarefa retorna uma tarefa especifica do banco de dados
+func BuscarTarefa(w http.ResponseWriter, r *http.Request) {
+	usuarioID, erro := autenticacao.ExtrairUsuarioID(r)
+	if erro != nil {
+		respostas.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	parametro := mux.Vars(r)
+	tarefaID, erro := strconv.ParseUint(parametro["tarefaId"], 10, 64)
+	if erro != nil {
+		respostas.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	db, erro := banco.Conectar()
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	defer db.Close()
+
+	repositorio := repository.NovoRepositorioDeTarefas(db)
+	tarefa, erro := repositorio.BuscarPorID(tarefaID, usuarioID)
+	if erro != nil {
+		respostas.Erro(w, http.StatusForbidden, errors.New("Não é possível buscar uma tarefa que não seja a sua!"))
+		return
+	}
+
+	respostas.JSON(w, http.StatusOK, tarefa)
 }

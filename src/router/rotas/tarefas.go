@@ -30,4 +30,10 @@ var rotaTarefa = []Rota{
 		Funcao:             controllers.DeletarTarefa,
 		RequerAutenticacao: true,
 	},
+	{
+		URI:                "/tarefa/{tarefaId}",
+		Metodo:             http.MethodGet,
+		Funcao:             controllers.BuscarTarefa,
+		RequerAutenticacao: true,
+	},
 }

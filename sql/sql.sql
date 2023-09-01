@@ -1,8 +1,10 @@
 CREATE DATABASE IF NOT EXISTS Todoist;
 USE Todoist;
 
-DROP TABLE IF EXISTS usuarios;
 DROP TABLE IF EXISTS Tarefas;
+DROP TABLE IF EXISTS Token;
+DROP TABLE IF EXISTS usuarios;
+
 
 CREATE TABLE usuarios (
     id int auto_increment primary key,
@@ -24,4 +26,14 @@ CREATE TABLE Tarefas (
     ON DELETE CASCADE,
 
     criadaEm timestamp default current_timestamp()
+) ENGINE=INNODB;
+
+CREATE TABLE Token (
+    id int auto_increment primary key,
+    id_usuario int,
+    token varchar(150),
+
+    FOREIGN KEY (id_usuario)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE
 ) ENGINE=INNODB;
